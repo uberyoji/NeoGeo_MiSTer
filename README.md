@@ -11,7 +11,7 @@ Both my Sony KV27FV300 and KV32FV310 are happy now :D
 Add the following to the bottom of `/media/fat/downloader.ini` on your MiSTer:
 ```ini
 [uberyoji_neogeo_mister_60hz]
-db_url = https://github.com/uberyoji/NeoGeo_MiSTer_60hz/raw/master/releases/uberyoji_neogeo_mister_60hz.json
+db_url = db_url = https://raw.githubusercontent.com/uberyoji/NeoGeo_MiSTer_60hz/master/releases/uberyoji_neogeo_mister_60hz.json
 ```
 
 

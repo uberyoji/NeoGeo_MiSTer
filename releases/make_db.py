@@ -8,12 +8,12 @@ import json
 
 # Add the following to /media/fat/downloader.ini
 # [uberyoji_neogeo_mister_60hz]
-# db_url = https://github.com/uberyoji/NeoGeo_MiSTer_60hz/raw/master/releases/uberyoji_neogeo_mister_60hz.json
+# db_url = db_url = https://raw.githubusercontent.com/uberyoji/NeoGeo_MiSTer_60hz/master/releases/uberyoji_neogeo_mister_60hz.json
 
 db_name = "uberyoji_neogeo_mister_60hz"
 db_filename = db_name+".json"
 
-db_url= "https://github.com/uberyoji/NeoGeo_MiSTer_60hz/raw/master/releases/"
+db_url= "https://raw.githubusercontent.com/uberyoji/NeoGeo_MiSTer_60hz/master/releases/"
 
 def get_file_props( entry ):
     pathname = entry[0]
@@ -56,9 +56,12 @@ def build_json():
         "timestamp": {1},
         "base_files_url": "",
         "default_options": {{}},
+        "folders": {{
+            "_Console": {{}}    
+        }},
         "files": {{
             {2}
-        }}
+        }}        
     }}
     """
 
@@ -72,7 +75,7 @@ def build_json():
     return json.format( db_name, int(time.time()), files )
 
 json_content = build_json();
-# print( json_content )
+print( json_content )
 
 if validate(json_content):
     json_file = open(db_filename,"w",encoding="utf8")
