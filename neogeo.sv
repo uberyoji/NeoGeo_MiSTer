@@ -381,7 +381,7 @@ always @(posedge CLK_50M) begin
 				end
 			5: begin
 					cfg_address <= 7;
-					cfg_data <= sys_mvs_r ? 2576980378 : 2865308404;
+					cfg_data <= sys_mvs_r ? 3148288251 : 3148288251;
 					cfg_write <= 1;
 				end
 			7: begin

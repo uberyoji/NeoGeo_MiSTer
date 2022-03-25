@@ -1,3 +1,19 @@
+# SNK Neo Geo Custom 60hz for the MiSTer Platform
+The frequency used on the Neo Geo platform is making the picture roll on some CRT tvs such as Sony Trinitrons. So I decided to fork the original project, maintain and release a version with a 60hz timing. Since it is no longer the exact timing, there might be some side effects in games. However all the games tried seemed fine but I did not test them all and I am not a Neo Geo expert.
+
+Full credits goes to the core developpers. 
+I have zero merit aside from simply recompiling the core with different timing and made it available as a custom DB.
+
+Enjoy. 
+Both my Sony KV27FV300 and KV32FV310 are happy now :D
+
+### Custom DB instructions
+Add the following to the bottom of `/media/fat/downloader.ini` on your MiSTer:
+```ini
+[uberyoji_neogeo_mister_60hz]
+db_url = https://github.com/uberyoji/NeoGeo_MiSTer_60hz/raw/master/releases/uberyoji_neogeo_mister_60hz.json
+```
+
 
 # [SNK Neo Geo](https://en.wikipedia.org/wiki/Neo_Geo_(system)) for [MiSTer Platform](https://github.com/MiSTer-devel/Main_MiSTer/wiki) 
 

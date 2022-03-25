@@ -1,0 +1,19 @@
+At Project Navigator at top left select IP Components.
+Right click Entity "pll" -> Edit in parameter editor.
+
+There you see Desired Frequency 96.0 & 48.0 Mhz. For 60Hz you need 60/59.18 x 96Mhz = 97.330180 and 48.665090. Enter those both at Desired Frequency and then make sure Actual Frequency matches exactly. Finally click Finish.
+
+1) install Quartus lite v17.0 (once)
+2) Install git (once)
+3) Get/update source code from repo
+4) Modify Entity pll from 96 to 97.330180 and 48 to 48.665090
+5) Compile core
+6) Profit
+
+
+In neogeo.sv:
+cfg_data <= sys_mvs_r ? 2576980378 : 2865308404;
+The first is for MVS and the second for AES. The number for 60Hz should be 3148288251. So just change one or both numbers.
+
+You might also still need to change the PLL to the higher clocks if it is unstable.
+
