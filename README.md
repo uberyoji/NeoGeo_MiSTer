@@ -7,6 +7,10 @@ I have zero merit aside from simply recompiling the core with different timing a
 Enjoy. 
 Both my Sony KV27FV300 and KV32FV310 are happy now :D
 
+### Notes
+- 60hz timing are applied only to the MVS setting. 
+- AES will keep its original timing.
+
 ### Custom DB instructions
 Add the following to the bottom of `/media/fat/downloader.ini` on your MiSTer:
 ```ini
