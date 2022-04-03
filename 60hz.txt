@@ -17,3 +17,5 @@ The first is for MVS and the second for AES. The number for 60Hz should be 31482
 
 You might also still need to change the PLL to the higher clocks if it is unstable.
 
+Final line in neogeo.sv around line 384:
+	cfg_data <= sys_mvs_r ? 3148288251 : 2865308404;

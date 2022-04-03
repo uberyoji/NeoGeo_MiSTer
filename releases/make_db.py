@@ -36,7 +36,7 @@ def get_file_props( entry ):
         return ""
 
 flist = [
-    ("_Console/NeoGeo60hz_20220326.rbf","NeoGeo60hz_20220326.rbf")      # mister path+file, file
+    ("_Console/NeoGeo60hz_20220403.rbf","NeoGeo60hz_20220403.rbf")      # mister path+file, file
 ]
 
 def validate(text):
