@@ -2,7 +2,7 @@
     {    
 
         "db_id": "uberyoji_neogeo_mister_60hz",
-        "timestamp": 1668374883,
+        "timestamp": 1671906442,
         "base_files_url": "",
         "default_options": {},
         "folders": {
@@ -10,10 +10,10 @@
         },
         "files": {
             
-            "_Console/NeoGeo60hz_20221109.rbf": {
-                "hash": "b87d1503f50bc6508670fcdf8d74f543",
-                "size": 3677052,
-                "url": "https://raw.githubusercontent.com/uberyoji/NeoGeo_MiSTer_60hz/master/releases/NeoGeo60hz_20221109.rbf",
+            "_Console/NeoGeo60hz_20221224.rbf": {
+                "hash": "529798308f1d966458a053336984ccd0",
+                "size": 3659604,
+                "url": "https://raw.githubusercontent.com/uberyoji/NeoGeo_MiSTer_60hz/master/releases/NeoGeo60hz_20221224.rbf",
                 "tags": [],
                 "overwrite": true,
                 "reboot": false
