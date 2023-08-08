@@ -35,7 +35,7 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 	<romset name="b2b" pcm="1" altname="Bang Bang Busters" publisher="Visco" year="2000"/>
 	<romset name="bakatono" pcm="1" altname="Bakatonosama Mahjong Manyuuki" publisher="Monolith Corp." year="1991"/>
 	<romset name="bangbead" pcm="1" altname="Bang Bead" publisher="Visco" year="2000"/>
-	<romset name="bjourney" pcm="0" altname="Blue's Journey" altnamej="Raguy" publisher="Alpha Denshi Co." year="1990" vromb_offset="0x200000" vrom_mirror="0"/>
+	<romset name="bjourney" pcm="0" altname="Blue's Journey" altnamej="Raguy" publisher="Alpha Denshi Co." year="1990" vromb_offset="0x200000"/>
 	<romset name="breakers" pcm="1" altname="Breakers" publisher="Visco" year="1996"/>
 	<romset name="breakrev" pcm="1" altname="Breakers Revenge" publisher="Visco" year="1998"/>
 	<romset name="bstars" pcm="0" altname="Baseball Stars Professional" publisher="SNK" year="1990" vromb_offset="0x200000"/>
@@ -82,7 +82,7 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 	<romset name="kabukikl" pcm="1" altname="Far East of Eden: Kabuki Klash" altnamej="Tengai Makyou: Shin Den" publisher="Hudson" year="1995"/>
 	<romset name="karnovr" pcm="1" altname="Karnov's Revenge" altnamej="Fighter's History Dynamite" publisher="Data East Corporation" year="1994"/>
 	<romset name="kizuna" pcm="1" altname="Kizuna Encounter: Super Tag Battle" altnamej="Fu'un Super Tag Battle" publisher="SNK" year="1996"/>
-	<romset name="kof94" pcm="1" altname="King of Fighters '94, The" publisher="SNK" year="1994"/>
+	<romset name="kof94" pcm="1" altname="King of Fighters '94, The" publisher="SNK" year="1994" rom_wait="1" p_wait="1"/>
 	<romset name="kof95" pcm="1" altname="King of Fighters '95, The" publisher="SNK" year="1995"/>
 	<romset name="kof95a" pcm="1" altname="King of Fighters '95, The (NGM-084, alt board)" publisher="SNK" year="1995"/>
 	<romset name="kof95h" pcm="1" altname="King of Fighters '95, The (NGH-084)" publisher="SNK" year="1995"/>
@@ -112,7 +112,7 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 	<romset name="nam1975" pcm="0" altname="NAM-1975" publisher="SNK" year="1990" vromb_offset="0x200000"/>
 	<romset name="ncombat" pcm="0" altname="Ninja Combat" publisher="Alpha Denshi Co." year="1990" vromb_offset="0x200000"/>
 	<romset name="ncombath" pcm="0" altname="Ninja Combat (NGH-009)" publisher="Alpha Denshi Co." year="1990" vromb_offset="0x200000"/>
-	<romset name="ncommand" pcm="1" altname="Ninja Commando" publisher="Alpha Denshi Co." year="1992"/>
+	<romset name="ncommand" pcm="1" altname="Ninja Commando" publisher="Alpha Denshi Co." year="1992" rom_wait="1"/>
 	<romset name="neobombe" pcm="1" altname="Neo Bomberman" publisher="Hudson" year="1997"/>
 	<romset name="neocup98" pcm="1" altname="Neo-Geo Cup 98: The Road to the Victory" publisher="SNK" year="1998"/>
 	<romset name="neodrift" pcm="1" altname="Neo Drift Out: New Technology" publisher="Visco" year="1996"/>
@@ -215,6 +215,24 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 		<file name="ngdt-300-v2.bin" index="20"/>
 		<file name="ngdt-300-v3.bin" index="24"/>
 	</romset>
+	<romset name="looptris" pcm="1" altname="LoopTris" publisher="Blastar" year="2021">
+		<file name="looptris.p1" index="4"/>
+		<file name="looptris.s1" index="8"/>
+		<file name="looptris.m1" index="9"/>
+		<file name="looptris.v1" index="16"/>
+		<file name="looptris.c1" index="64"/>
+		<file name="looptris.c2" index="65"/>
+	</romset>
+	<romset name="teot" pcm="1" altname="Eye of Typhoon, The: Tsunami Edition" publisher="Viccom / OzzyOuzo" year="2022">
+		<file name="teot-p1.bin" index="4"/>
+		<file name="teot-p2.bin" index="6"/>
+		<file name="teot-s1.bin" index="8"/>
+		<file name="teot-m1.bin" index="9"/>
+		<file name="teot-v1.bin" index="16"/>
+		<file name="teot-v2.bin" index="32"/>
+		<file name="teot-c1.bin" index="64" size="0x800000"/>
+		<file name="teot-c2.bin" index="65" size="0x800000"/>
+	</romset>
 
 	<!-- ROMs requiring 64MB SDRAM -->
 
@@ -271,7 +289,7 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 	<romset name="kof99h" sma="1" pcm="1" altname="King of Fighters '99, The: Millennium Battle (NGH-2510)" publisher="SNK" year="1999" ram="2"/>
 	<romset name="kof99k" sma="1" pcm="1" altname="King of Fighters '99, The: Millennium Battle (Korean release)" publisher="SNK" year="1999" ram="2"/>
 	<romset name="kof99p" pcm="1" altname="King of Fighters '99, The: Millennium Battle (prototype)" publisher="SNK" year="1999" ram="2"/>
-	<romset name="kof2000,kof2000n" cmc="2" sma="5" pcm="1" altname="King of Fighters 2000, The" publisher="SNK" year="2002"/>
+	<romset name="kof2000,kof2000n" cmc="2" sma="5" pcm="1" altname="King of Fighters 2000, The" publisher="SNK" year="2000"/>
 	<romset name="kof2001" pcm="1" altname="King of Fighters 2001, The" publisher="Eolith / SNK" year="2001" ram="2"/>
 	<romset name="kof2001h" pcm="1" altname="King of Fighters 2001, The (NGH-2621)" publisher="Eolith / SNK" year="2001" ram="2"/>
 	<romset name="ct2k3sa" pcm="1" altname="Crouching Tiger Hidden Dragon 2003 Super Plus (The King of Fighters 2001 bootleg)" publisher="Hack / Bootleg" year="2003" ram="2"/>
@@ -288,7 +306,7 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 	<romset name="kof2003h" cmc="2" pvc="1" pcm="1" altname="King of Fighters 2003, The (NGH-2710)" publisher="SNK Playmore" year="2003" ram="2"/>
 	<romset name="matrim" cmc="2" pcm="1" altname="Power Instinct Matrimelee" altnamej="Shin Goketsuji Ichizoku: Tokon Matrimelee" publisher="Atlus / Noise Factory" year="2003" ram="2"/>
 	<romset name="mslug3" cmc="1" sma="4" pcm="1" altname="Metal Slug 3" publisher="SNK" year="2000" ram="2"/>
-	<romset name="mslug3h" cmc="1" sma="4" pcm="1" altname="Metal Slug 3 (NGH-2560)" publisher="SNK" year="2000" ram="2"/>
+	<romset name="mslug3h" cmc="1"  pcm="1" altname="Metal Slug 3 (NGH-2560)" publisher="SNK" year="2000" ram="2"/>
 	<romset name="mslug3b6,mslug6" pcm="1" altname="Metal Slug 6 (Metal Slug 3 bootleg)" publisher="Hack / Bootleg" year="2000" ram="2"/>
 	<romset name="mslug5" pvc="1" pcm="1" altname="Metal Slug 5" publisher="SNK Playmore" year="2003" ram="2"/>
 	<romset name="mslug5h" pvc="1" pcm="1" altname="Metal Slug 5 (NGH-2680)" publisher="SNK Playmore" year="2003" ram="2"/>
@@ -364,18 +382,6 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 	</romset>
 	<romset name="samsh5fe" pcm="1" altname="Samurai Shodown V Special Final Edition" altnamej="Samurai Shodown Zero Special Final Edition" publisher="Yuki Enterprise / SNK Playmore" year="2004" ram="2"/>
 	<romset name="samsh5pf" pcm="1" altname="Samurai Shodown V Perfect" altnamej="Samurai Spirits Zero Perfect" publisher="SNK" year="2020" ram="2"/>
-	<romset name="teot" pcm="1" altname="Eye of Typhoon, The: Tsunami Edition" publisher="Viccom / OzzyOuzo" year="2021" ram="2">
-		<file name="202-p1.bin" index="4"/>
-		<file name="202-p2.bin" index="6"/>
-		<file name="202-s1.bin" index="8"/>
-		<file name="202-c1.bin" index="64"/>
-		<file name="202-c2.bin" index="65"/>
-		<file name="202-c3.bin" index="128"/>
-		<file name="202-c4.bin" index="129"/>
-		<file name="202-m1.bin" index="9"/>
-		<file name="202-v1.bin" index="16"/>
-		<file name="202-v2.bin" index="32"/>
-	</romset>
 
 	<!-- ROMs requiring 128MB SDRAM (2x64MB) -->
 
@@ -389,4 +395,53 @@ https://lmgtfy.com/?q=darksoft+neo+geo+roll-up+pack
 		<file name="bada-v1.bin" index="16"/>
 	</romset>
 
+	<!-- Not in darksoft pack -->
+	<!-- Att: Game requires files from kof98.zip (242-*) to be present in kof98ae2016.zip! -->
+	<romset name="kof98ae2016" pcm="2" altname="King of Fighters '98, The: Anniversary Edition" publisher="Hack" year="2016" ram="3">
+		<file name="242ae-p1.p1"   index="4"/>
+		<file name="242ae-p2.sp2"  index="6"/>
+		<file name="242ae-c1.c1"   index="64"/>
+		<file name="242ae-c2.c2"   index="65"/>
+		<file name="242-c3.c3"     index="96"/>
+		<file name="242-c4.c4"     index="97"/>
+		<file name="242ae-c5.c5"   index="128"/>
+		<file name="242ae-c6.c6"   index="129"/>
+		<file name="242ae-c7.c7"   index="160"/>
+		<file name="242ae-c8.c8"   index="161"/>
+		<file name="242ae-c9.c9"   index="192"/>
+		<file name="242ae-c10.c10" index="193"/>
+		<file name="242ae-c11.c11" index="224"/>
+		<file name="242ae-c12.c12" index="225"/>
+		<file name="242ae-m1.m1"   index="9"/>
+		<file name="242ae-s1.s1"   index="8"/>
+		<file name="242-v1.v1"     index="16"/>
+		<file name="242-v2.v2"     index="24"/>
+		<file name="242-v3.v3"     index="32"/>
+		<file name="242-v4.v4"     index="40"/>
+		<file name="242ae-v5.v5"   index="48"/>
+	</romset>
+
+	<romset name="kof98Ultimate" pcm="2" altname="King of Fighters '98, The: Ultimate Match" publisher="Hack" year="2020" ram="3">
+		<file name="274-p1.p1"   index="4"/>
+		<file name="274-p2.sp2"  index="6"/>
+		<file name="274-c1.c1"   index="64"/>
+		<file name="274-c2.c2"   index="65"/>
+		<file name="274-c3.c3"   index="96"/>
+		<file name="274-c4.c4"   index="97"/>
+		<file name="274-c5.c5"   index="128"/>
+		<file name="274-c6.c6"   index="129"/>
+		<file name="274-c7.c7"   index="160"/>
+		<file name="274-c8.c8"   index="161"/>
+		<file name="274-c9.c9"   index="192"/>
+		<file name="274-c9A.c9A" index="193"/>
+		<file name="274-c9B.c9B" index="224"/>
+		<file name="274-c9C.c9C" index="225"/>
+		<file name="274-m1.m1"   index="9"/>
+		<file name="274-s1.s1"   index="8"/>
+		<file name="274-v1.v1"   index="16"/>
+		<file name="274-v2.v2"   index="24"/>
+		<file name="274-v3.v3"   index="32"/>
+		<file name="274-v4.v4"   index="40"/>
+		<file name="274-v5.v5"   index="48"/>
+	</romset>
 </romsets>

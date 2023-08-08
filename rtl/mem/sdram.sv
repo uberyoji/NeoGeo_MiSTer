@@ -47,13 +47,13 @@ module sdram
 
 	input             sel,
 	input      [26:1] addr,        // 25 bit address for 8bit mode. addr[0] = 0 for 16bit mode for correct operations.
-	output reg [63:0] dout,        // data output to cpu
+	output reg [15:0] dout,        // data output to cpu
 	input      [15:0] din,         // data input from cpu
 	input             wr,          // request write
 	input       [1:0] bs,          // bit1 - write high byte, bit0 - write low byte, Ignored while reading.
 	input             rd,          // request read
-	input             burst,       // 0 = Single read, 1 = Four-word burst read
 	output reg        ready,
+	input             refresh,
 
 	input             cpsel,
 	input      [26:1] cpaddr,
@@ -70,8 +70,6 @@ assign SDRAM_nWE  = command[0];
 assign SDRAM_CKE  = 1;
 assign {SDRAM_DQMH,SDRAM_DQML} = SDRAM_A[12:11];
 
-
-// Burst length = 4
 localparam BURST_LENGTH        = 4;
 localparam BURST_CODE          = (BURST_LENGTH == 8) ? 3'b011 : (BURST_LENGTH == 4) ? 3'b010 : (BURST_LENGTH == 2) ? 3'b001 : 3'b000;  // 000=1, 001=2, 010=4, 011=8
 localparam ACCESS_TYPE         = 1'b0;     // 0=sequential, 1=interleaved
@@ -112,27 +110,23 @@ localparam STATE_RFSH    = 11;
 
 
 always @(posedge clk) begin
-	reg [CAS_LATENCY+BURST_LENGTH-1:0] data_ready_delay;
+	reg [CAS_LATENCY:0] data_ready_delay;
 
 	reg        saved_wr;
-	reg        saved_burst;
 	reg [12:0] cas_addr;
 	reg [15:0] saved_data;
 	reg  [8:0] cpcnt;
 	reg        old_cpreq = 0;
 	reg  [3:0] state = STATE_STARTUP;
+	reg        refresh_old;
 
 	refresh_count <= refresh_count+1'b1;
 
 	data_ready_delay <= data_ready_delay>>1;
+	if(data_ready_delay[0]) ready <= 1;
 
-	if(data_ready_delay[3:0]) dout <= {dout[47:0], SDRAM_DQ};
-
-	if(data_ready_delay[0] &  saved_burst) ready <= 1;
-	if(data_ready_delay[3] & ~saved_burst) ready <= 1;
-	if(data_ready_delay[3] & ~saved_burst) data_ready_delay <= 0;
-
-	SDRAM_DQ <= 16'bZ;
+	dout <= SDRAM_DQ;
+	SDRAM_DQ <= 'Z;
 
 	if(SDRAM_EN) begin
 		command <= CMD_NOP;
@@ -194,6 +188,12 @@ always @(posedge clk) begin
 				end
 				cpbusy <= 0;
 			end
+			
+			STATE_RFSH: begin
+				state         <= STATE_IDLE_5;
+				command       <= CMD_AUTO_REFRESH;
+				chip          <= 1;
+			end
 
 			STATE_IDLE_5: state <= STATE_IDLE_4;
 			STATE_IDLE_4: state <= STATE_IDLE_3;
@@ -201,43 +201,26 @@ always @(posedge clk) begin
 			STATE_IDLE_2: state <= STATE_IDLE_1;
 			STATE_IDLE_1: state <= STATE_IDLE;
 
-			STATE_RFSH: begin
-				state    <= STATE_IDLE_5;
-				command  <= CMD_AUTO_REFRESH;
-				chip     <= 1;
-			end
-
 			STATE_IDLE: begin
-				if (refresh_count > cycles_per_refresh) begin
-					// Priority is to issue a refresh if one is outstanding
-					//------------------------------------------------------------------------
-					//-- Start the refresh cycle. 
-					//-- This tasks tRFC (66ns), so 7 idle cycles are needed @ 120MHz
-					//------------------------------------------------------------------------
-					state    <= STATE_RFSH;
-					command  <= CMD_AUTO_REFRESH;
-					refresh_count <= refresh_count - cycles_per_refresh + 1'd1;
-					chip     <= 0;
-				end else if (rd | wr) begin
-					if(sel) begin
-						{cas_addr[12:9],SDRAM_BA,SDRAM_A,cas_addr[8:0]} <= {~wr ? 2'b00 : ~bs, 1'b1, addr[25:1]};
-						chip       <= addr[26];
-						saved_data <= din;
-						saved_wr   <= wr;
-						saved_burst<= ~wr & burst;
-						command    <= CMD_ACTIVE;
-						state      <= STATE_WAIT;
-						ready      <= 0;
-					end
-					else if (refresh_count > cycles_per_refresh) begin
-						// Other SDRAM is requested, so we can refresh now
-						state <= STATE_IDLE_1;
-					end
+				if (refresh ^ refresh_old) begin
+					state      <= STATE_RFSH;
+					command    <= CMD_AUTO_REFRESH;
+					chip       <= 0;
+					refresh_old<= refresh;
+				end
+				else if (sel & (rd | wr)) begin
+					{cas_addr[12:9],SDRAM_BA,SDRAM_A,cas_addr[8:0]} <= {~wr ? 2'b00 : ~bs, 1'b1, addr[25:1]};
+					chip       <= addr[26];
+					saved_data <= din;
+					saved_wr   <= wr;
+					command    <= CMD_ACTIVE;
+					state      <= STATE_WAIT;
+					ready      <= 0;
 				end
 				else begin
-					cpbusy <= 0;
-					cprd   <= 0;
-					old_cpreq <= cpreq;
+					cpbusy     <= 0;
+					cprd       <= 0;
+					old_cpreq  <= cpreq;
 					if(~old_cpreq & cpreq & cpsel) begin
 						{cas_addr[12:9],SDRAM_BA,SDRAM_A,cas_addr[8:0]} <= {2'b00, 1'b0, cpaddr[25:1]};
 						chip    <= cpaddr[26];
@@ -253,23 +236,20 @@ always @(posedge clk) begin
 			STATE_WAIT: state <= STATE_RW;
 			STATE_RW: begin
 				// Wait at least 4 cycles @96MHz (2 CAS_LATENCY + 2 PRECHARGE (tRP 21ns))
-				state   <= saved_burst ? STATE_IDLE_5 : STATE_IDLE_4;
-				SDRAM_A <= cas_addr;
+				state         <= STATE_IDLE_4;
+				SDRAM_A       <= cas_addr;
 				if(saved_wr) begin
-					command  <= CMD_WRITE;
-					SDRAM_DQ <= saved_data;
-					ready    <= 1;
+					command    <= CMD_WRITE;
+					SDRAM_DQ   <= saved_data;
+					ready      <= 1;
 				end
 				else begin
-					command  <= CMD_READ;
-					data_ready_delay[CAS_LATENCY+BURST_LENGTH-1] <= 1;
+					command    <= CMD_READ;
+					data_ready_delay[CAS_LATENCY] <= 1;
 				end
 			end
-			
-			STATE_WAITCP: begin
-				state <= STATE_CP;
-			end
 
+			STATE_WAITCP: state <= STATE_CP;
 			STATE_CP: begin
 				SDRAM_A       <= {2'b00, !cpcnt, cas_addr[9:0]};
 				cas_addr[8:0] <= cas_addr[8:0] + 1'd1;
@@ -284,19 +264,19 @@ always @(posedge clk) begin
 		endcase
 
 		if (init) begin
-			state <= STATE_STARTUP;
+			state         <= STATE_STARTUP;
 			refresh_count <= startup_refresh_max - sdram_startup_cycles;
 		end
 	end
 	else begin
-		ready <= 1;
-		cpbusy <= 0;
-		cprd <= 0;
-		dout <= '0;
-		SDRAM_A <= 0;
+		ready    <= 1;
+		cpbusy   <= 0;
+		cprd     <= 0;
+		dout     <= 0;
+		SDRAM_A  <= 0;
 		SDRAM_BA <= 0;
-		command <= 0;
-		chip <= 0;
+		command  <= 0;
+		chip     <= 0;
 	end
 end
 

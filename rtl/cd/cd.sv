@@ -44,10 +44,12 @@ module cd_sys(
 	output CD_TR_RD_FIX,
 	output CD_TR_RD_SPR,
 	output CD_TR_RD_Z80,
+	output CD_TR_RD_PCM,
 
 	output reg CD_USE_FIX,
 	output reg CD_USE_SPR,
 	output reg CD_USE_Z80,
+	output reg CD_USE_PCM,
 	output reg [2:0] CD_TR_AREA,
 	output reg [1:0] CD_BANK_SPR,
 	output reg CD_BANK_PCM,
@@ -56,6 +58,7 @@ module cd_sys(
 	output reg CD_UPLOAD_EN, // The bios writes to Z80 RAM without CD_UPLOAD_EN enabled. Maybe this is only watchdog disable?
 
 	output CD_VBLANK_IRQ_EN,
+	output CD_TIMER_IRQ_EN,
 
 	input IACK,
 	output reg CD_IRQ,
@@ -95,8 +98,8 @@ module cd_sys(
 	
 	input DMA_SDRAM_BUSY
 );
+	parameter MCLK = 96671316;
 
-	reg CD_USE_PCM;
 	reg CD_nRESET_DRIVE;
 	reg [15:0] REG_FF0002;
 	reg [11:0] REG_FF0004;
@@ -158,8 +161,6 @@ module cd_sys(
 		.WRITE_READY(CDDA_WR_READY)
 	);
 
-
-	localparam MCLK = 96671316;
 	localparam SECTOR_TIME_1X = MCLK / 75;
 	localparam SECTOR_TIME_2X = MCLK / 150;
 	localparam SECTOR_TIME_3X = MCLK / 225;
@@ -223,12 +224,14 @@ module cd_sys(
 	reg [7:0] DMA_TIMER;
 	reg [15:0] DMA_RD_DATA;
 	reg [31:0] DMA_COUNT_RUN;
+
+	localparam DMA_RW_CYCLES = MCLK / 4800000; // TODO: Tune this
 	
 	reg CD_DATA_WR_PREV;
 	wire CD_DATA_WR_START =  CD_DATA_WR & ~CD_DATA_WR_PREV;
 	wire CD_DATA_WR_END   = ~CD_DATA_WR &  CD_DATA_WR_PREV;
 
-	always @(posedge clk_sys or negedge nRESET)
+	always @(posedge clk_sys)
 	begin
 		if (!nRESET)
 		begin
@@ -338,7 +341,6 @@ module cd_sys(
 			if (~DMA_START_PREV & DMA_START)
 			begin
 				DMA_STATE <= 4'd1;
-				DMA_RUNNING <= 1;
 				DMA_IO_CNT <= 4'd0;
 
 				DMA_COUNT_RUN <= DMA_COUNT;
@@ -401,6 +403,7 @@ module cd_sys(
 						begin
 							nBR <= 1;
 							nBGACK <= 0;
+							DMA_RUNNING <= 1;
 							DMA_STATE <= DMA_STATE_START;
 						end
 					end
@@ -503,7 +506,7 @@ module cd_sys(
 					begin
 						DMA_RD_DATA[15:8] <= CACHE_DOUT; // Got upper byte
 						CACHE_RD_ADDR <= CACHE_RD_ADDR + 1'b1;
-						DMA_TIMER <= 8'd10;	// TODO: Tune this
+						DMA_TIMER <= DMA_RW_CYCLES[7:0] >> 1;	// TODO: Tune this
 						DMA_STATE <= DMA_STATE_CACHE_RD_L;
 					end
 
@@ -518,7 +521,7 @@ module cd_sys(
 					if (DMA_STATE == DMA_STATE_WR)
 					begin
 						DMA_WR_OUT <= 1;
-						DMA_TIMER <= 8'd20;	// TODO: Tune this
+						DMA_TIMER <= DMA_RW_CYCLES[7:0];	// TODO: Tune this
 						DMA_STATE <= DMA_STATE_WR_DONE;
 					end
 
@@ -534,7 +537,7 @@ module cd_sys(
 					if (DMA_STATE == DMA_STATE_RD)
 					begin
 						DMA_RD_OUT <= 1;
-						DMA_TIMER <= 8'd20;	// TODO: Tune this
+						DMA_TIMER <= DMA_RW_CYCLES[7:0];	// TODO: Tune this
 						DMA_STATE <= DMA_STATE_RD_DONE;
 					end
 
@@ -566,7 +569,7 @@ module cd_sys(
 	wire LC8951_WR = (WRITING & (M68K_ADDR[11:2] == 10'b0001_000000));	// FF0101, FF0103
 	
 	// nAS used ?
-	wire TR_ZONE = DMA_RUNNING ? (DMA_ADDR_OUT[23:20] == 4'hE) : (M68K_ADDR[23:20] == 4'hE);
+	wire TR_ZONE = (DMA_RUNNING ? (DMA_ADDR_OUT[23:20] == 4'hE) : (M68K_ADDR[23:20] == 4'hE)) & SYSTEM_CDx;
 
 	wire TR_ZONE_RD = TR_ZONE & (DMA_RUNNING ? DMA_RD_OUT : M68K_RW & ~(nLDS & nUDS));
 	wire TR_ZONE_WR = TR_ZONE & (DMA_RUNNING ? DMA_WR_OUT : ~M68K_RW & ~(nLDS & nUDS));
@@ -585,10 +588,11 @@ module cd_sys(
 	assign CD_TR_RD_FIX = TR_ZONE_RD & CD_TR_FIX;
 	assign CD_TR_RD_SPR = TR_ZONE_RD & CD_TR_SPR;
 	assign CD_TR_RD_Z80 = TR_ZONE_RD & CD_TR_Z80;
+	assign CD_TR_RD_PCM = TR_ZONE_RD & CD_TR_PCM;
 
 	reg [1:0] CDD_nIRQ_SR;
 
-	always @(posedge clk_sys or negedge nRESET)
+	always @(posedge clk_sys)
 	begin
 		if (!nRESET)
 		begin
@@ -793,11 +797,13 @@ module cd_sys(
 	endfunction
 
 	assign CD_VBLANK_IRQ_EN = &{REG_FF0004[5:4]};
+	assign CD_TIMER_IRQ_EN = &{REG_FF0004[9:8]};
 
 	assign M68K_DATA = (SYSTEM_CDx & ~nAS & M68K_RW & IACK) ? {8'h00, CD_IRQ_VECTOR} :		// Vectored interrupt handler
 							(READING & {M68K_ADDR[11:1], 1'b0} == 12'h004) ? {4'h0, REG_FF0004} :
 							(READING & {M68K_ADDR[11:1], 1'b0} == 12'h11C) ? {3'b110, CD_LID, CD_JUMPERS, 8'h00} :	// Top mech
 							(READING & {M68K_ADDR[11:1], 1'b0} == 12'h160) ? {11'b00000000_000, CDCK, CDD_DOUT} :	// REG_CDDINPUT
+							(READING & {M68K_ADDR[11:1], 1'b0} == 12'h166) ? {16'd0} : // Bit 5 needs to be clear for VU meters in CD player to work
 							(READING & {M68K_ADDR[11:1], 1'b0} == 12'h188) ? bit_reverse(CD_AUDIO_L) :	// CDDA L
 							(READING & {M68K_ADDR[11:1], 1'b0} == 12'h18A) ? bit_reverse(CD_AUDIO_R) :	// CDDA R
 							(LC8951_RD) ? {8'h00, LC8951_DOUT} :
